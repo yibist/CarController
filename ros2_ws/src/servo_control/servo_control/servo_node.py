@@ -13,16 +13,11 @@ class ServoNode(Node):
         super().__init__('servo_node')
 
         try:
-            # Initialize I2C bus using Blinka
-            # This automatically finds the correct pins on the Pi 5
             self.i2c = busio.I2C(board.SCL, board.SDA)
 
-            # Initialize PCA9685
             self.pca = PCA9685(self.i2c)
             self.pca.frequency = 50  # 50Hz is standard for MG996R
 
-            # Initialize the Servo on Channel 0
-            # Note: MG996R usually works best with pulse widths between 500 and 2400
             self.channel_num = 0
             self.my_servo = servo.Servo(
                 self.pca.channels[self.channel_num], 
@@ -47,12 +42,10 @@ class ServoNode(Node):
 
     def angle_callback(self, msg):
         try:
-            # Constrain angle between 0 and 180
             angle = max(0.0, min(180.0, msg.data))
             
-            # Set the servo angle
             self.my_servo.angle = angle
-            self.get_logger().info(f'Moving to {angle:.1f}°')
+            self.get_logger().info(f'Moving to {angle:.1f}°', throttle_duration_sec=0.5)
             
         except Exception as e:
             self.get_logger().warn(f'Error moving servo: {str(e)}')
