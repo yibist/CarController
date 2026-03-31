@@ -1,65 +1,32 @@
-# =====================================
-# General
-# =====================================
-# OS generated files
-.DS_Store
-Thumbs.db
-*.log
+FROM ros:humble
 
-# Python cache
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-*.pdb
-*.egg-info/
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    python3-pip \
+    python3-lgpio \
+    python3-colcon-common-extensions \
+    i2c-tools \
+    git \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
-# Editor/IDE files
-*.swp
-*.swo
-*.vscode/
-.idea/
+# Install Python libs
+RUN pip3 install --no-cache-dir \
+    Adafruit-Blinka \
+    adafruit-circuitpython-pca9685 \
+    adafruit-circuitpython-motor
 
-# =====================================
-# ROS2 specific
-# =====================================
-# ROS2 build directories
-ros2_ws/build/
-ros2_ws/install/
-ros2_ws/log/
-ros2_ws/devel/
+# Create workspace
+WORKDIR /ros2_ws/src
 
-# Colcon cache
-ros2_ws/.colcon/
+# Clone RPLidar ROS2 driver (specifying the ros2 branch)
+RUN git clone -b ros2 https://github.com/Slamtec/rplidar_ros.git
 
-# Catkin (if any)
-*.catkin
-*.catkin_tools/
+# Build workspace
+WORKDIR /ros2_ws
+# Using /bin/bash -c to ensure the source command works correctly during build
+RUN /bin/bash -c "source /opt/ros/humble/setup.bash && colcon build"
 
-# =====================================
-# C++ build artifacts
-# =====================================
-*.o
-*.so
-*.a
-*.out
-*.exe
-CMakeFiles/
-CMakeCache.txt
-cmake_install.cmake
-Makefile
-
-# =====================================
-# Docker
-# =====================================
-# Do not ignore Dockerfile itself
-# Ignore Docker build cache
-docker-compose.override.yml
-*.env
-
-# =====================================
-# Misc
-# =====================================
-*.tmp
-*.bak
-*.swp
+# Source ROS + workspace automatically for interactive shells
+RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc && \
+    echo "source /ros2_ws/install/setup.bash" >> ~/.bashrc
