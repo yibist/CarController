@@ -1,0 +1,11 @@
+
+<?xml version="1.0"?>
+
+<package format="3">
+  <name>motor_control</name>
+  <version>0.0.1</version>
+  <description>Motor control package</description>
+  <maintainer email="you@example.com">you</maintainer>
+  <license>MIT</license>
+  <depend>rclpy</depend>
+</package>

@@ -10,7 +10,8 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-    ],
+        ('share/{}'.format(package_name), ['launch/gps_node_launch.py']),
+        ],
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='root',
@@ -24,7 +25,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-                    'gps_node = gps_rt.gps_node:main',
+                    'gps_node = gps_rtk.gps_node:main',
             ],
     },
 )
